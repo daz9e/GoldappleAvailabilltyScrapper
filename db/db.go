@@ -2,14 +2,17 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
 
-func InitDB() *sql.DB {
-	fmt.Println("startdb")
-	db, err := sql.Open("sqlite3", "./main.db")
+var (
+	Database *sql.DB
+)
+
+func InitDB() {
+	db, err := sql.Open("sqlite3", "./test.db")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -19,7 +22,14 @@ func InitDB() *sql.DB {
 
 	Migrate(db)
 
-	return db
+	Database = db
+}
+
+func DatabaseClose() {
+	err := Database.Close()
+	if err != nil {
+		log.Printf("Error with closing database: %s", err)
+	}
 }
 
 func Migrate(db *sql.DB) {
@@ -31,6 +41,7 @@ func Migrate(db *sql.DB) {
     );
     CREATE TABLE IF NOT EXISTS links(
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        good_id INTEGER NOT NULL UNIQUE,
         url TEXT NOT NULL UNIQUE
     );
     CREATE TABLE IF NOT EXISTS user_links(
@@ -45,4 +56,26 @@ func Migrate(db *sql.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func FindUsersByGoods(userIds []string) {
+}
+
+func CreateUser(user *tgbotapi.User) {
+	_, err := Database.Exec("INSERT INTO users (telegram_id, username) VALUES (?, ?)", user.ID, user.UserName)
+	if err != nil {
+		log.Printf("Error with creating new user: %s", err)
+	}
+
+}
+
+func CreateLink(goodId string, url string) {
+	_, err := Database.Exec("INSERT INTO links (good_id, url) VALUES (?, ?)", goodId, url)
+	if err != nil {
+		log.Printf("Error with creating new link: %s", err)
+	}
+}
+
+func AddGoodForUser(userId string) {
+
 }

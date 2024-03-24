@@ -3,6 +3,7 @@ package scrapper
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -22,7 +23,12 @@ func GetAvailability(url string) string {
 		fmt.Println(err)
 		return "Error in client"
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(res.Body)
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
