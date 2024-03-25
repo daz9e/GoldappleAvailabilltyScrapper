@@ -76,6 +76,13 @@ func CreateLink(goodId string, url string) {
 	}
 }
 
+func CreateManyToManyForLinks(user *tgbotapi.User, goodId string) {
+	_, err := Database.Exec("INSERT INTO user_links (user_id, link_id) VALUES (?, ?)", user.ID, goodId)
+	if err != nil {
+		log.Printf("Error with creating new user_link: %s", err)
+	}
+
+}
 func AddGoodForUser(userId string) {
 
 }

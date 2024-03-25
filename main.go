@@ -2,15 +2,14 @@ package main
 
 import (
 	"ga-scraper/db"
+	scrapper "ga-scraper/scraper"
 	"ga-scraper/tgbot"
-	"time"
 )
 
 func main() {
 	db.InitDB()
 	defer db.DatabaseClose()
 
-	tgbot.InitBot()
 	go tgbot.ListenBot()
-	time.Sleep(10 * time.Minute)
+	scrapper.CycleScrapper()
 }
